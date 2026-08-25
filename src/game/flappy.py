@@ -6,12 +6,12 @@ pygame.init()
 
 # Variables
 running = True
+game_speed = 1.5
 
 # Const Variables
 SCREEN_WIDTH = 256
 SCREEN_HEIGHT = 256
 GAME_SCALE = 2
-GAME_SPEED = 1.5
 FONT = pygame.font.SysFont("Comicsansms", 32)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,7 +29,7 @@ def import_image(image_name, width=SCREEN_WIDTH, height=SCREEN_HEIGHT):
 
 background = import_image("background.png")
 floor = import_image("floor.png", 64, 32)
-restart = import_image("restart.png", 192, 42)
+restart = import_image("restart.png", 192 // 2, 42 // 2)
 pillar_image = import_image("pillar.png", 32, 128)
 
 # Importing the bird
@@ -49,7 +49,7 @@ def create_floor(screen, floor, x):
     for i in range(1, 6):
         screen.blit(floor, (x + i * floor.get_width(), SCREEN_HEIGHT * GAME_SCALE - floor.get_height()))
 
-    x -= GAME_SPEED
+    x -= game_speed
     if x <= -floor.get_width():
         x = 0
 
@@ -72,6 +72,7 @@ def load_game():
 load_game()
 def update_display(screen):
     global background_x, score, pillar_cooldown, pillar_image, pillars, bird, floor_x
+    game_speed = 1.5 + score // 100
 
     if bird.die == False:
         background_x = create_background(screen, background, background_x)
@@ -82,7 +83,7 @@ def update_display(screen):
 
         floor_x = create_floor(screen, floor, floor_x)
 
-        pillar_cooldown += GAME_SPEED
+        pillar_cooldown += game_speed
 
         if pillar_cooldown >= 250:
             pillar_image = import_image("pillar.png", 32, 128)
@@ -91,7 +92,7 @@ def update_display(screen):
             pillar_cooldown = 0
 
         for pillar in pillars:
-            pillar.update(GAME_SPEED)
+            pillar.update(game_speed)
             pillar.draw(screen)
 
             if bird.check_collision(pillar):
@@ -99,8 +100,10 @@ def update_display(screen):
 
             if bird.y < 0 and bird.x == pillar.x:
                 bird.die = True
-            elif bird.y >= pillar.passage_y - pillar.gap_size // 2 and bird.y <= pillar.passage_y + pillar.gap_size // 2 and bird.x == pillar.x:
-                score += 1
+            elif bird.y >= pillar.passage_y - pillar.gap_size // 2 and bird.y <= pillar.passage_y + pillar.gap_size // 2 and bird.x >= pillar.x:
+                if not pillar.pillar_passed:
+                    score += 1
+                    pillar.pillar_passed = True
 
             if pillar.check_erase():
                 pillars.remove(pillar)

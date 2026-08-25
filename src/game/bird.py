@@ -10,6 +10,7 @@ class Bird():
         self.jump_strength = -6
         self.image = image
         self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.rect = self.rect.inflate(-self.rect.width * 0.2, -self.rect.height * 0.2) 
 
     def jump(self):
         self.velocity_y = self.jump_strength

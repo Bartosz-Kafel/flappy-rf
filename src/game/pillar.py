@@ -3,8 +3,10 @@ import pygame, random
 class Pillar():
     def __init__(self, x, image, image_body):
         self.x = x
-        self.passage_y = random.randint(128, 384)
+        self.passage_y = random.randint(256, 384)
         self.gap_size = 128
+        self.pillar_passed = False
+        
         self.image_bottom = image
         self.image_body_bottom = image_body
 
@@ -34,7 +36,7 @@ class Pillar():
             segment_y = self.rect_bottom.bottom + i * body_height
             screen.blit(self.image_body_bottom, (self.x, segment_y))
 
-    def update(self, speed=2):
+    def update(self, speed):
         self.x -= speed
         self.rect_top.x = self.x
         self.rect_bottom.x = self.x
