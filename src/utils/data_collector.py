@@ -32,6 +32,9 @@ class dataColl():
         if self.action == 1 and len(self.colected_data) > 0:
             self.colected_data[-1]["action"] = 1
 
+        if self.pipe_dist_x > 256:
+            self.pipe_dist_x = 256
+
         return {
             "pipe_dist_x": self.pipe_dist_x,
             "pipe_dist_y": self.pipe_dist_y,

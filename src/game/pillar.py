@@ -3,7 +3,7 @@ import pygame, random
 class Pillar():
     def __init__(self, x, image, image_body):
         self.x = x
-        self.passage_y = random.randint(256, 384)
+        self.passage_y = random.randint(128, 384)
         self.gap_size = 128
         self.pillar_passed = False
         self.time_between_pillars = 250
