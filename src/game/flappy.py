@@ -6,15 +6,13 @@ pygame.init()
 
 # Variables
 running = True
-background_x = 0
-floor_x = 0
-pillar_cooldown = 250
 
 # Const Variables
 SCREEN_WIDTH = 256
 SCREEN_HEIGHT = 256
 GAME_SCALE = 2
 GAME_SPEED = 1.5
+FONT = pygame.font.SysFont("Comicsansms", 32)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Setting up the display
@@ -35,8 +33,6 @@ restart = import_image("restart.png", 192, 42)
 pillar_image = import_image("pillar.png", 32, 128)
 
 # Importing the bird
-bird_image = import_image("bird.png", 16 * 1.5, 12 * 1.5)
-bird = Bird(SCREEN_WIDTH * GAME_SCALE // 4, SCREEN_HEIGHT * GAME_SCALE // 2, bird_image)
 
 # Functions
 def create_background(screen, background, x):
@@ -59,22 +55,34 @@ def create_floor(screen, floor, x):
 
     return x
 
-pillars = []
+# Load Game
+def load_game():
+    global background_x, floor_x, pillar_cooldown, bird, pillars, score
+    background_x = 0
+    floor_x = 0
+    pillar_cooldown = 0
+    score = 0
+
+    bird_image = import_image("bird.png", 16 * 1.5, 12 * 1.5)
+    bird = Bird(SCREEN_WIDTH * GAME_SCALE // 4, SCREEN_HEIGHT * GAME_SCALE // 2, bird_image)
+
+    pillars = []
+
+# Game initialization
+load_game()
 def update_display(screen):
+    global background_x, score, pillar_cooldown, pillar_image, pillars, bird, floor_x
 
     if bird.die == False:
-        global background_x
         background_x = create_background(screen, background, background_x)
 
         bird.update()
         bird.check_floor_collision((SCREEN_HEIGHT - 32) * GAME_SCALE)
         bird.draw(screen)
 
-        global pillar_cooldown
         pillar_cooldown += GAME_SPEED
 
         if pillar_cooldown >= 250:
-            global pillar_image
             pillar_image = import_image("pillar.png", 32, 128)
             pillars.append(Pillar(SCREEN_WIDTH * GAME_SCALE, pillar_image))
             pillar_cooldown = 0
@@ -86,14 +94,23 @@ def update_display(screen):
             if bird.check_collision(pillar):
                 bird.die = True
 
+            if bird.y < 0 and bird.x == pillar.x:
+                bird.die = True
+            elif bird.y >= pillar.passage_y - pillar.gap_size // 2 and bird.y <= pillar.passage_y + pillar.gap_size // 2 and bird.x == pillar.x:
+                score += 1
+
             if pillar.check_erase():
                 pillars.remove(pillar)
 
-        global floor_x
         floor_x = create_floor(screen, floor, floor_x)
 
     else:
         screen.blit(restart, ((SCREEN_WIDTH * GAME_SCALE - restart.get_width()) // 2, (SCREEN_HEIGHT * GAME_SCALE - restart.get_height()) // 2))
+        if pygame.mouse.get_pressed()[0]:
+            load_game()
+
+    text_surface = FONT.render(str(score), True, (255, 255, 255))
+    screen.blit(text_surface, ((SCREEN_WIDTH * GAME_SCALE) // 2 - text_surface.get_width() // 2, 10))
 
     pygame.display.update()
 
