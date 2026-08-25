@@ -80,11 +80,14 @@ def update_display(screen):
         bird.check_floor_collision((SCREEN_HEIGHT - 32) * GAME_SCALE)
         bird.draw(screen)
 
+        floor_x = create_floor(screen, floor, floor_x)
+
         pillar_cooldown += GAME_SPEED
 
         if pillar_cooldown >= 250:
             pillar_image = import_image("pillar.png", 32, 128)
-            pillars.append(Pillar(SCREEN_WIDTH * GAME_SCALE, pillar_image))
+            pillar_body_image = import_image("pillar_body.png", 32, 128)
+            pillars.append(Pillar(SCREEN_WIDTH * GAME_SCALE, pillar_image, pillar_body_image))
             pillar_cooldown = 0
 
         for pillar in pillars:
@@ -102,7 +105,6 @@ def update_display(screen):
             if pillar.check_erase():
                 pillars.remove(pillar)
 
-        floor_x = create_floor(screen, floor, floor_x)
 
     else:
         screen.blit(restart, ((SCREEN_WIDTH * GAME_SCALE - restart.get_width()) // 2, (SCREEN_HEIGHT * GAME_SCALE - restart.get_height()) // 2))

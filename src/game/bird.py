@@ -31,4 +31,6 @@ class Bird():
         return self.rect.colliderect(pillar.rect_top) or self.rect.colliderect(pillar.rect_bottom)
 
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        rotated_image = pygame.transform.rotate(self.image, -self.velocity_y * 4)
+        rotated_rect = rotated_image.get_rect(center=self.rect.center)
+        screen.blit(rotated_image, rotated_rect)
