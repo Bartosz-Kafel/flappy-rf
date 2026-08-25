@@ -4,19 +4,6 @@ import pygame, os
 
 pygame.init()
 
-# Game Loop
-# while running:
-#    for event in pygame.event.get():
-#        if event.type == pygame.QUIT:
-#            running = False
-#
-#        if event.type == pygame.KEYDOWN:
-#            if event.key == pygame.K_SPACE:
-#                bird.jump()#
-#
-#    update_display(screen)
-#    clock.tick(60)
-
 class FlappyEnv: # Making a class effectivly allows to reuse the game across multiple instances, which is really useful for obtaining data for an ai agent
     def __init__(self):
         # Constant Variables
@@ -78,10 +65,9 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
 
     ### Seperating Section ###
 
-    def step(self, action=0):
+    def step(self, action):
         if not self.bird.die:
-            if action == 1:
-                self.bird.jump()
+            self.bird.action = action
 
             self.game_speed = 1.5 + self.score // 50
 
