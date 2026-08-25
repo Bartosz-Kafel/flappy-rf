@@ -1,23 +1,14 @@
-import pygame, os
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-def import_image(image_name, width, height):
-    image = pygame.image.load(os.path.join(BASE_DIR, "assets", "sprites", image_name)).convert_alpha()
-    scaled_image = pygame.transform.scale(image, (width * 2, height * 2))
-
-    return scaled_image
-
+import pygame
 
 class Bird():
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, image):
         self.x = x
         self.y = y
         self.velocity_y = 0
         self.die = False
-        self.gravity = 0.4
-        self.jump_strength = -8
-        self.image = import_image("bird.png", width, height)
+        self.gravity = 0.25
+        self.jump_strength = -6
+        self.image = image
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
     def jump(self):
@@ -35,6 +26,9 @@ class Bird():
             self.die = True
             return True
         return False
+
+    def check_collision(self, pillar):
+        return self.rect.colliderect(pillar.rect_top) or self.rect.colliderect(pillar.rect_bottom)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

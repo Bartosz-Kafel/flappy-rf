@@ -1,4 +1,5 @@
 from game.bird import Bird
+from game.pillar import Pillar
 import pygame, os
 
 pygame.init()
@@ -7,11 +8,13 @@ pygame.init()
 running = True
 background_x = 0
 floor_x = 0
+pillar_cooldown = 250
 
 # Const Variables
 SCREEN_WIDTH = 256
 SCREEN_HEIGHT = 256
 GAME_SCALE = 2
+GAME_SPEED = 1.5
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Setting up the display
@@ -28,10 +31,12 @@ def import_image(image_name, width=SCREEN_WIDTH, height=SCREEN_HEIGHT):
 
 background = import_image("background.png")
 floor = import_image("floor.png", 64, 32)
-game_over = import_image("restart.png", 192, 42)
+restart = import_image("restart.png", 192, 42)
+pillar_image = import_image("pillar.png", 32, 128)
 
 # Importing the bird
-bird = Bird(SCREEN_WIDTH * GAME_SCALE // 4, SCREEN_HEIGHT * GAME_SCALE // 2, 16 * GAME_SCALE, 16 * GAME_SCALE)
+bird_image = import_image("bird.png", 16 * 1.5, 12 * 1.5)
+bird = Bird(SCREEN_WIDTH * GAME_SCALE // 4, SCREEN_HEIGHT * GAME_SCALE // 2, bird_image)
 
 # Functions
 def create_background(screen, background, x):
@@ -48,27 +53,47 @@ def create_floor(screen, floor, x):
     for i in range(1, 6):
         screen.blit(floor, (x + i * floor.get_width(), SCREEN_HEIGHT * GAME_SCALE - floor.get_height()))
 
-    x -= 1
+    x -= GAME_SPEED
     if x <= -floor.get_width():
         x = 0
 
     return x
 
+pillars = []
 def update_display(screen):
 
     if bird.die == False:
         global background_x
         background_x = create_background(screen, background, background_x)
 
+        bird.update()
+        bird.check_floor_collision((SCREEN_HEIGHT - 32) * GAME_SCALE)
+        bird.draw(screen)
+
+        global pillar_cooldown
+        pillar_cooldown += GAME_SPEED
+
+        if pillar_cooldown >= 250:
+            global pillar_image
+            pillar_image = import_image("pillar.png", 32, 128)
+            pillars.append(Pillar(SCREEN_WIDTH * GAME_SCALE, pillar_image))
+            pillar_cooldown = 0
+
+        for pillar in pillars:
+            pillar.update(GAME_SPEED)
+            pillar.draw(screen)
+
+            if bird.check_collision(pillar):
+                bird.die = True
+
+            if pillar.check_erase():
+                pillars.remove(pillar)
+
         global floor_x
         floor_x = create_floor(screen, floor, floor_x)
 
-        bird.update()
-        bird.check_floor_collision((SCREEN_HEIGHT - 30) * GAME_SCALE)
-        bird.draw(screen)
-
     else:
-        screen.blit(game_over, ((SCREEN_WIDTH * GAME_SCALE - game_over.get_width()) // 2, (SCREEN_HEIGHT * GAME_SCALE - game_over.get_height()) // 2))
+        screen.blit(restart, ((SCREEN_WIDTH * GAME_SCALE - restart.get_width()) // 2, (SCREEN_HEIGHT * GAME_SCALE - restart.get_height()) // 2))
 
     pygame.display.update()
 
