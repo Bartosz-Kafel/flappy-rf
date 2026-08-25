@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: flappy-rf
+Version: 0.1.0
+Summary: Flappy Bird AI with custom CART and Random Forest from scratch
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
