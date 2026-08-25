@@ -1,0 +1,14 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Large models or temporary raw data (optional)
+*.pkl
+*.png  # Remove if you DO want to track sprite images
