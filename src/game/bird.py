@@ -14,8 +14,9 @@ class Bird():
         self.x = x
         self.y = y
         self.velocity_y = 0
-        self.gravity = 0.5
-        self.jump_strength = -32
+        self.die = False
+        self.gravity = 0.4
+        self.jump_strength = -8
         self.image = import_image("bird.png", width, height)
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
@@ -23,9 +24,17 @@ class Bird():
         self.velocity_y = self.jump_strength
 
     def update(self):
-        self.velocity_y += self.gravity
-        self.y += self.velocity_y
-        self.rect.center = (self.x, self.y)
+        if not self.die:
+            self.velocity_y += self.gravity
+            self.y += self.velocity_y
+            self.rect.center = (self.x, self.y)
+
+    def check_floor_collision(self, floor_y):
+        if self.rect.bottom >= floor_y:
+            self.rect.bottom = floor_y
+            self.die = True
+            return True
+        return False
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
