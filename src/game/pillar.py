@@ -6,6 +6,7 @@ class Pillar():
         self.passage_y = random.randint(256, 384)
         self.gap_size = 128
         self.pillar_passed = False
+        self.time_between_pillars = 250
         
         self.image_bottom = image
         self.image_body_bottom = image_body
