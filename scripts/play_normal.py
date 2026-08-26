@@ -22,6 +22,6 @@ while running:
     if flappyenv.score > best_score:
         best_score = flappyenv.score
 
-    flappyenv.step(action, best_score, True)
+    flappyenv.step(action, best_score)
     action = 0
     clock.tick(60)

@@ -94,7 +94,7 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
 
                 if self.bird.y < 0 and self.bird.x == pillar.x:
                     self.bird.die = True
-                elif self.bird.y >= pillar.passage_y - pillar.gap_size // 2 and self.bird.y <= pillar.passage_y + pillar.gap_size // 2 and self.bird.x >= pillar.x:
+                elif self.bird.y >= pillar.passage_y - pillar.gap_size // 2 and self.bird.y <= pillar.passage_y + pillar.gap_size // 2 and self.bird.x >= pillar.x + 20:
                     if not pillar.pillar_passed:
                         self.score += 1
                         pillar.pillar_passed = True

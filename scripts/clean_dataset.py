@@ -19,11 +19,11 @@ clean_df = pd.concat([action_frames, idle_sampled]).sample(
 
 clean_df["dist_x"]   = (clean_df["dist_x"] // 16).astype(int)  # 0 to 256 -> 0 to 16
 clean_df["dist_y"]   = (clean_df["dist_y"] // 20).astype(int)  # -300 to 300 -> -15 to 15
-clean_df["axis_y"] = (clean_df["axis_y"] // 20).astype(int)
+clean_df["axis_y"] = (clean_df["axis_y"] // 10).astype(int)
 clean_df["vel_y"] = (clean_df["vel_y"] // 1).astype(int)       # Integer velocities
 
 from ml.classification_tree import DecisionTree
-dt = DecisionTree(8)
+dt = DecisionTree(9)
 df = clean_df
 
 # 2. Separate jump (1) and idle (0) frames

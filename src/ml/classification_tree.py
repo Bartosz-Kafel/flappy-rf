@@ -11,7 +11,7 @@ class DecisionTree():
         self.mh = CARTMath()
         self.tree_path = os.path.join(r"c:\Users\thrix\Documents\flappy-rf", "models", "tree_root.pkl")
 
-    def split(self, node, min_sample_leaf=1):
+    def split(self, node, min_sample_leaf=6):
         total_len = len(node)
         if total_len < 2 * min_sample_leaf:
             return None
