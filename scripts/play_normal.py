@@ -6,7 +6,8 @@ import pygame, os
 pygame.init()
 flappyenv = FlappyEnv()
 clock = pygame.time.Clock()
-action = 0
+action = 0  
+best_score = 0
 running = True
 
 while running:
@@ -18,6 +19,9 @@ while running:
             if event.key == pygame.K_SPACE:
                 action = 1
 
-    flappyenv.step(action)
+    if flappyenv.score > best_score:
+        best_score = flappyenv.score
+
+    flappyenv.step(action, best_score, True)
     action = 0
     clock.tick(60)

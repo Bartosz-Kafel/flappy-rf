@@ -8,6 +8,7 @@ class Bird():
         self.die = False
         self.gravity = 0.25
         self.action = 0
+        self.best_score = 0
         self.jump_strength = -6
         self.image = image
         self.rect = self.image.get_rect(center=(self.x, self.y))

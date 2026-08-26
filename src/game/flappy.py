@@ -1,6 +1,6 @@
 from game.bird import Bird
 from game.pillar import Pillar
-import pygame, os
+import pygame, os, time
 
 pygame.init()
 
@@ -10,7 +10,8 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
         self.SCREEN_WIDTH = 256
         self.SCREEN_HEIGHT = 256
         self.GAME_SCALE = 2
-        self.FONT = pygame.font.SysFont("Comicsansms", 32)
+        self.FONT1 = pygame.font.SysFont("Comicsansms", 32)
+        self.FONT2 = pygame.font.SysFont("Comicsansms", 16)
         self.BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH * self.GAME_SCALE, self.SCREEN_HEIGHT * self.GAME_SCALE))
@@ -65,11 +66,9 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
 
     ### Seperating Section ###
 
-    def step(self, action):
+    def step(self, action, best_score, ai=False):
         if not self.bird.die:
             self.bird.action = action
-
-            self.game_speed = 1.5 + self.score // 50
 
             self.background_x = self.create_background(self.screen, self.background, self.background_x)
 
@@ -108,8 +107,13 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
             if pygame.mouse.get_pressed()[0]:
                 self.reset()
 
-        # Fix 2: Un-indent text rendering & display update so UI renders every frame (alive or dead)
-        text_surface = self.FONT.render(str(self.score), True, (255, 255, 255))
+            if ai == True:
+                self.reset()
+
+        text_surface = self.FONT1.render(str(self.score), True, (255, 255, 255))
         self.screen.blit(text_surface, ((self.SCREEN_WIDTH * self.GAME_SCALE) // 2 - text_surface.get_width() // 2, 10))
+
+        text_surface_best = self.FONT2.render(str(best_score), True, (255, 255, 255))
+        self.screen.blit(text_surface_best, ((self.SCREEN_WIDTH * self.GAME_SCALE) // 2 - text_surface_best.get_width() // 2, 45))
 
         pygame.display.update()

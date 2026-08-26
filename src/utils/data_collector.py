@@ -60,6 +60,6 @@ class dataColl():
                 self.colected_data = []  # If there are less than 60 frames, clear all data
 
     def save_to_csv(self):
-        with open(os.path.join(r"c:\Users\thrix\Documents\flappy-rf", "data", "raw", "dataset.csv"), 'a', newline='') as f:
+        with open(os.path.join(r"c:\Users\thrix\Documents\flappy-rf", "data", "raw", "raw_dataset.csv"), 'a', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=["pipe_dist_x", "pipe_dist_y", "bird_y", "bird_vel", "action"])
             writer.writerows(self.colected_data)

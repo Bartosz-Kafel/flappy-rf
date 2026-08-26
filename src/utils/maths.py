@@ -1,10 +1,8 @@
-import math
-
-class CMath():
+class CARTMath():
     def __init__(self):
         pass
 
-    def calcGini(self, data):
+    def gini(self, data):
         count = {}
         if len(data) == 0:
             return 0.0
