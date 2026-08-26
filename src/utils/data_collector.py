@@ -1,4 +1,3 @@
-from game import FlappyEnv
 import csv, os
 
 class dataColl():
@@ -8,8 +7,8 @@ class dataColl():
         self.pipe_dist_x = None
         self.action = None
 
-    def get_state(self, flappy_env):
-        bird_x = flappy_env.bird.x
+    def get_state(self, flappy_env, bird):
+        bird_x = bird.x
 
         # Find active pipe ahead
         target = None
@@ -20,14 +19,14 @@ class dataColl():
 
         if target:
             self.pipe_dist_x = target.x - bird_x
-            self.pipe_dist_y = flappy_env.bird.y - target.passage_y
+            self.pipe_dist_y = bird.y - target.passage_y  # FIXED: bird.y
         else:
             self.pipe_dist_x = flappy_env.SCREEN_WIDTH * flappy_env.GAME_SCALE
             self.pipe_dist_y = 0
 
-        self.action = flappy_env.bird.action
-        self.vel_y = flappy_env.bird.velocity_y
-        self.y = flappy_env.bird.y
+        self.action = bird.action  # FIXED: bird.action
+        self.vel_y = bird.velocity_y  # FIXED: bird.velocity_y
+        self.y = bird.y  # FIXED: bird.y
 
         if self.action == 1 and len(self.colected_data) > 0:
             self.colected_data[-1]["action"] = 1
@@ -42,7 +41,7 @@ class dataColl():
             "bird_vel": self.vel_y,
             "action": 0,
         }
-
+    
     def showcase_step(self):
         print((f"Pipe distance on the X axis: {self.pipe_dist_x}\nPipe distance on the Y axis: {self.pipe_dist_y}\nBird velocity across the Y axis: {self.vel_y}\nAction: {self.action}"))
 

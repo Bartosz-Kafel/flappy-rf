@@ -21,12 +21,14 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    data = dc.get_state(flappyenv)
-    sample = pd.Series(
+    # dc.run(flappyenv)
+
+    data = dc.get_state(flappyenv, flappyenv.bird)
+    sample = pd.Series( 
         [
             int(data["pipe_dist_x"] // 16),
             int(data["pipe_dist_y"] // 20),
-            int(data["bird_y"] // 20),
+            int(data["bird_y"] // 5),
             int(data["bird_vel"] // 1),
         ],
         index=["dist_x", "dist_y", "axis_y", "vel_y"],
@@ -37,6 +39,6 @@ while running:
     if flappyenv.score > best_score:
         best_score = flappyenv.score
 
-    flappyenv.step(action, best_score, True)
+    flappyenv.step(action, best_score, True, False)
     action = 0
-    clock.tick(60)
+    clock.tick(3000)

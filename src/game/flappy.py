@@ -1,6 +1,9 @@
 from game.bird import Bird
 from game.pillar import Pillar
+from ml import DecisionTree
+from utils import dataColl
 import pygame, os, time
+import pandas as pd
 
 pygame.init()
 
@@ -21,11 +24,22 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
         self.floor_x = 0
         self.pillar_cooldown = 0
         self.score = 0
+        self.sent = False
+
+        self.dt = DecisionTree()
+        self.dc = dataColl()
+
+        self.dt.load_tree()
 
         self.load_images()
 
         self.bird_image = self.import_image("bird.png", 16 * 1.5, 12 * 1.5)
         self.bird = Bird(self.SCREEN_WIDTH * self.GAME_SCALE // 4, self.SCREEN_HEIGHT * self.GAME_SCALE // 2, self.bird_image)
+
+        self.bird_image_ai = self.import_image("bird.png", 16 * 1.5, 12 * 1.5)
+        self.bird_image_ai.set_alpha(128)
+        self.bird_ai = Bird(self.SCREEN_WIDTH * self.GAME_SCALE // 4, self.SCREEN_HEIGHT * self.GAME_SCALE // 2, self.bird_image_ai)
+
 
         self.pillars = []
 
@@ -64,13 +78,37 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
 
         return x
 
+    def get_data(self, bird):
+
+        data = self.dc.get_state(self, bird)
+        sample = pd.Series(
+               [
+                   int(data["pipe_dist_x"] // 16),
+                   int(data["pipe_dist_y"] // 20),
+                   int(data["bird_y"] // 5),
+                   int(data["bird_vel"] // 1),
+               ],
+               index=["dist_x", "dist_y", "axis_y", "vel_y"],
+           )
+        return sample
+
     ### Seperating Section ###
 
-    def step(self, action, best_score, ai=False):
+    def step(self, action, best_score, ai=False, with_ai=False):
         if not self.bird.die:
-            self.bird.action = action
-
             self.background_x = self.create_background(self.screen, self.background, self.background_x)
+
+            if with_ai == True and not self.bird_ai.die:
+                sample = self.get_data(self.bird_ai)
+                action_ai = self.dt.predict(sample)
+            
+                self.bird_ai.action = action_ai
+            
+                self.bird_ai.update()
+                self.bird_ai.check_floor_collision((self.SCREEN_HEIGHT - 32) * self.GAME_SCALE)
+                self.bird_ai.draw(self.screen)
+
+            self.bird.action = action
 
             self.bird.update()
             self.bird.check_floor_collision((self.SCREEN_HEIGHT - 32) * self.GAME_SCALE)
@@ -92,9 +130,13 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
                 if self.bird.check_collision(pillar):
                     self.bird.die = True
 
+                if with_ai == True:
+                    if self.bird_ai.check_collision(pillar):
+                        self.bird_ai.die = True
+
                 if self.bird.y < 0 and self.bird.x == pillar.x:
                     self.bird.die = True
-                elif self.bird.y >= pillar.passage_y - pillar.gap_size // 2 and self.bird.y <= pillar.passage_y + pillar.gap_size // 2 and self.bird.x >= pillar.x + 20:
+                elif self.bird.y >= pillar.passage_y - pillar.gap_size // 2 and self.bird.y <= pillar.passage_y + pillar.gap_size // 2 and self.bird.x >= pillar.x:
                     if not pillar.pillar_passed:
                         self.score += 1
                         pillar.pillar_passed = True
@@ -102,8 +144,25 @@ class FlappyEnv: # Making a class effectivly allows to reuse the game across mul
                 if pillar.check_erase():
                     self.pillars.remove(pillar)
 
+            self.sent = False
+
         else:
-            self.screen.blit(self.restart, ((self.SCREEN_WIDTH * self.GAME_SCALE - self.restart.get_width()) // 2, (self.SCREEN_HEIGHT * self.GAME_SCALE - self.restart.get_height()) // 2))
+            if with_ai:
+                if self.bird.die and not self.bird_ai.die:
+                    text_surface = self.FONT1.render("AI Wins", True, (220, 20, 60))
+                    self.screen.blit(text_surface, ((self.SCREEN_WIDTH * self.GAME_SCALE) // 2 - text_surface.get_width() // 2, 200))
+                    if self.sent == False:
+                        print("AI Won")
+                        self.sent = True
+                else:
+                    text_surface = self.FONT1.render("Player Wins", True, (220, 20, 60))
+                    self.screen.blit(text_surface, ((self.SCREEN_WIDTH * self.GAME_SCALE) // 2 - text_surface.get_width() // 2, 200))
+                    if self.sent == False:
+                        print("Player Won")
+                        self.sent = True
+            else: 
+                self.screen.blit(self.restart, ((self.SCREEN_WIDTH * self.GAME_SCALE - self.restart.get_width()) // 2, (self.SCREEN_HEIGHT * self.GAME_SCALE - self.restart.get_height()) // 2))
+
             if pygame.mouse.get_pressed()[0]:
                 self.reset()
 
