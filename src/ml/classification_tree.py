@@ -9,7 +9,7 @@ class DecisionTree():
         self.max_depth = max_depth
         self.root = None
         self.mh = CARTMath()
-        self.tree_path = os.path.join(r"c:\Users\thrix\Documents\flappy-rf", "models", "tree_root.pkl")
+        self.tree_path = os.path.join(r"c:\Users\barto\Documents\flappy-rf", "models", "tree_root.pkl")
 
     def split(self, node, min_sample_leaf=6):
         total_len = len(node)

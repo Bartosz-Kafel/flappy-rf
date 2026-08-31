@@ -7,10 +7,13 @@ src/flappy_rf.egg-info/top_level.txt
 src/game/__init__.py
 src/game/bird.py
 src/game/flappy.py
+src/game/pillar.py
 src/ml/__init__.py
 src/ml/classification_tree.py
 src/ml/node.py
 src/ml/random_forest.py
+src/utils/__init__.py
 src/utils/data_collector.py
+src/utils/maths.py
 tests/test_cart.py
 tests/test_rf.py
