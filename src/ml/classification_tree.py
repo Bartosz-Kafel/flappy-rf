@@ -9,19 +9,21 @@ class DecisionTree():
         self.max_depth = max_depth
         self.root = None
         self.mh = CARTMath()
-        self.tree_path = os.path.join(r"c:\Users\barto\Documents\flappy-rf", "models", "tree_root.pkl")
 
-    def split(self, node, min_sample_leaf=6):
+        self.bsdir = os.path.join(os.path.expanduser("~"), "Documents", "flappy-rf")
+        self.tree_path = os.path.join(self.bsdir, "models", "tree_root.pkl")
+
+    def split(self, node, min_sample_leaf=6, min_sample_split=10):
         total_len = len(node)
-        if total_len < 2 * min_sample_leaf:
+        if total_len < min_sample_split * min_sample_leaf:
             return None
 
-        # Count overall class frequencies once
+        # Counts class frequencies allowing for further calculation of Gini
         total_counts = {}
         for val in node:
             total_counts[val] = total_counts.get(val, 0) + 1
 
-        # Calculate parent node Gini
+        # Calculate the gini of the parent Node
         original_gini = 1.0 - sum((c / total_len) ** 2 for c in total_counts.values())
 
         max_reduction = 0.0
