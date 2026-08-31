@@ -173,3 +173,6 @@ class DecisionTree():
     def load_tree(self):
         with open(self.tree_path, "rb") as f:
             self.root = pickle.load(f)
+
+    def print_tree(self):
+        return self.root
