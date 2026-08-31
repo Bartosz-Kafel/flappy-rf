@@ -2,7 +2,7 @@ from ml.node import Node
 from utils import CARTMath
 import pandas as pd
 import numpy as np
-import pickle, os
+import pickle, os, random
 
 class DecisionTree():
     def __init__(self, max_depth=5):
@@ -32,7 +32,7 @@ class DecisionTree():
         left_counts = {}
         right_counts = total_counts.copy()
 
-        # Step through array in single pass (O(N))
+        # Step through array in single pass
         for i in range(1, total_len):
             val = node[i - 1]
 
@@ -47,7 +47,7 @@ class DecisionTree():
             left_len = i
             right_len = total_len - i
 
-            # Instant Gini calculation from dictionary counts
+            # Calculate the gini of both leafs
             left_gini = 1.0 - sum((c / left_len) ** 2 for c in left_counts.values())
             right_gini = 1.0 - sum((c / right_len) ** 2 for c in right_counts.values() if c > 0)
 
@@ -62,21 +62,27 @@ class DecisionTree():
             return best_split, max_reduction
         return None
     
-    def full_split(self, features, depvector):
+    def full_split(self, features, depvector, rf=False):
         best_split_features = []
         best_split_depvector = []
         best_feature = None
         best_value = None
         highest_reduction = 0.0
 
-        # Combine features and target into one temporary frame
+        # Combines the features and target into one temporary dataset.
         df = features.copy()
         df["target"] = depvector
 
+        # Allows for random sampling of features for RF.
+        if rf == True:
+            features = features.drop(columns=random.sample(list(features.columns), 2))
+
         for x in features.columns:
+            # Sorts the values by the feature column to ensure that the split is done in the correct order.
             sorted_df = df.sort_values(by=x)
             sorted_target = sorted_df["target"].tolist()
 
+            # Does the split
             split_info = self.split(sorted_target)
 
             if split_info is None:
